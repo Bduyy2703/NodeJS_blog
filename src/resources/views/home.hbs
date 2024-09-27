@@ -1,1 +1,49 @@
-<h1>HOME PAGE</h1>
+<div class="mt-4">
+    <div class="row">
+        {{#each courses}}
+        <div class=" hovercourse col-sm-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <a href="/courses/{{this.slug}}"><img src="{{this.image}}" class="card-img-top" alt="{{this.name}}"></a>
+                <div class="card-body d-flex flex-column">
+                   <a href="/courses/{{this.slug}}"><h5 class="card-title text-truncate">{{this.name}}</h5></a> 
+                    <p class="card-text text-truncate font-italic">{{this.description}}</p> 
+                    <a href="/courses/{{this.slug}}" class="btn btn-buy mt-auto">Buy Course</a> 
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+<style>
+  .hovercourse:hover {
+    background-color: #3b6a84;
+    border: 0.5px solid #484d51;
+    border-radius: 20px;
+    transform: scale(1.02); 
+    transition: all 0.1s ease;
+}
+    a{
+        text-decoration: none;
+    }
+    a:hover{
+        text-decoration: solid;
+        color: #407c9c;
+    }
+    .font-italic {
+        font-family: 'Roboto', sans-serif; /* Thay thế 'Roboto' bằng font bạn muốn */
+    font-style: italic;
+    font-size: 16px; /* Kích thước chữ (tuỳ chỉnh theo ý bạn) */
+    }
+
+    .btn-buy {
+        background-color: #574f4d; 
+        color: rgb(230, 216, 216);
+        border: none;
+    }
+
+
+    .btn-buy:hover {
+        background-color: #48e261; 
+        color: rgb(36, 43, 8);
+    }
+</style>

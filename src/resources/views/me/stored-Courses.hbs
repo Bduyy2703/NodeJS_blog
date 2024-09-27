@@ -1,0 +1,159 @@
+<div class="mt-4">
+    <h3>My Courses</h3>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Time Created</th>
+                <th>Edit Courses</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                <td>{{this.indexPlusOne}}</td>
+                <td>{{this.name}}</td>
+                <td>{{this.level}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a href="/courses/{{this._id}}/edit" class="btn btn-success">Update</a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-course-modal" data-id="{{this._id}}">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-course-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete course?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure about that?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn-delete-course">Accept delete</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form delete -->
+<form name="delete-course-form" method="POST"></form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var courseId;
+        var deleteForm = document.forms['delete-course-form'];
+        var btnDeleteCourse = document.getElementById('btn-delete-course');
+
+        // Khi modal được hiển thị
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Nút đã nhấn để mở modal
+            courseId = button.data('id'); // Lấy id của khóa học
+        });
+
+        // Khi nhấn nút "Accept delete"
+        btnDeleteCourse.onclick = function () {
+            deleteForm.action = '/courses/' + courseId + '?_method=DELETE';
+            deleteForm.submit();
+        };
+    });
+</script>
+
+
+<style>
+    /* Style cho tiêu đề bảng */
+    .mt-4 h3 {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    /* Style cho bảng */
+    .styled-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 16px;
+        text-align: left;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+    }
+
+    /* Style cho hàng tiêu đề */
+    .styled-table thead tr {
+        background-color: #01705a;
+        color: #ffffff;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    /* Style cho từng hàng của bảng */
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    /* Style hover vào từng hàng */
+    .styled-table tbody tr:hover {
+        background-color: #f3f3f3;
+    }
+
+    /* Responsive cho bảng khi màn hình nhỏ */
+    @media screen and (max-width: 768px) {
+
+        .styled-table,
+        .styled-table thead,
+        .styled-table tbody,
+        .styled-table th,
+        .styled-table td,
+        .styled-table tr {
+            display: block;
+            width: 100%;
+        }
+
+        .styled-table thead {
+            display: none;
+        }
+
+        .styled-table tr {
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .styled-table td {
+            position: relative;
+            padding-left: 50%;
+            text-align: right;
+        }
+
+        .styled-table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #666;
+        }
+    }
+</style>

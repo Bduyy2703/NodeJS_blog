@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
+    "beautiful": "lint-staged",
     "start": "nodemon --inspect src/index.js",
-    "watch":"node-sass --watch src/resources/scss/ --output src/public/css/",
+    "watch": "node-sass --watch src/resources/scss/ --output src/public/css/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,12 +23,28 @@
   },
   "homepage": "https://github.com/Bduyy2703/NodeJS_blog#readme",
   "description": "",
+  "lint-staged": {
+    "src/**/*.{js,json,scss}": "prettier --write --single-quote --tab-width 4 --trailing-comma all"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm test",
+      "...": "..."
+    }
+  },
   "dependencies": {
     "express": "^4.21.0",
     "express-handlebars": "^8.0.1",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.6.3",
+    "mongoose-slug-generator": "^1.0.4",
     "node-sass": "^9.0.0"
   },
   "devDependencies": {
-    "morgan": "^1.10.0"
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "morgan": "^1.10.0",
+    "prettier": "^3.3.3"
   }
 }
