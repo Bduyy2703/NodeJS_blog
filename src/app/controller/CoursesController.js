@@ -32,18 +32,27 @@ class CourseController {
   
     }
     //get
-    create(req,res,next){
-        res.render('create')
+    create(req, res, next) {
+        res.render('create');
     }
     //post
-    store(req,res,next){
-       const course = new Course(req.body)
-       course.save()
-        .then(()=>res.redirect(`/`))
-        .catch(error =>{
-            
-        });
+    store(req, res, next) {
+        try {
+            console.log(req.body); // In req.body
+            const course = new Course(req.body);
+            course.save()
+                .then(() => res.redirect('/me/stored/courses')) // Chuyển hướng nếu lưu thành công
+                .catch(error => {
+                    console.error("Error saving course:", error); // Ghi lỗi vào console
+                    res.status(500).send('Internal Server Error'); // Trả về lỗi HTTP 500
+                });
+        } catch (error) {
+            console.error("Error creating course:", error); // Bắt lỗi nếu có
+            res.status(500).send('Internal Server Error'); // Trả về lỗi HTTP 500
+        }
     }
+    
+    
     edit(req,res,next){
         Course.findById(req.params.id)
             .then(course=>res.render('edit',{course:mongooseToObject(course)}))
@@ -55,9 +64,30 @@ class CourseController {
             .catch(next) 
     }
     delete(req,res,next){
-        Course.deleteOne({_id:req.params.id})
+        Course.delete({_id:req.params.id})
             .then(()=>{res.redirect('back')})
             .catch(next) 
+    }
+    restore(req,res,next){
+        Course.restore({_id:req.params.id})
+        .then(()=>{res.redirect('back')})
+        .catch(next) 
+    }
+    forcedelete (req,res,next){
+        Course.deleteOne({_id:req.params.id})
+        .then(()=>{res.redirect('back')})
+        .catch(next) 
+    }
+    handleForm(req,res,next){
+        switch(req.body.action){
+            case 'delete':
+                Course.delete({_id:{$in:req.body.courseIds}})
+                .then(()=>{res.redirect('back')})
+                .catch(next) 
+                break;
+            default :
+            res.json({message :'Action is invalid'});
+        }
     }
 }
 

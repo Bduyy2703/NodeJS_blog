@@ -1,24 +1,9 @@
-<form name="container-form" method="post" action="/courses/handle-form-action" class="mt-4">
-    <div>
-        <h3>My Courses</h3>
-        <a href="/me/trash/courses">Trash</a>
-        <div class="mt-4 d-flex align-items-center">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="Checkbox-all">
-                <label class="form-check-label" for="Checkbox-all">
-                    ALL
-                </label>
-            </div>
-            <select class="form-select form-select-sm all-option" aria-label="Default select example" name="action" required>
-                <option value="" selected>-- Choose action --</option>
-                <option value="delete">Delete</option>
-            </select>
-            <button class="btn btn-primary btn-sm btn-submit disabled">Go</button>
+<div class="mt-4"></div>
+<div>
+    <a href="/me/stored/courses">Back to my courses</a>
+    <h3>Trash Courses</h3>
 
-        </div>
-    </div>
 </div>
-
 <table class="styled-table">
     <thead>
         <tr>
@@ -32,38 +17,28 @@
     <tbody>
         {{#each courses}}
         <tr>
-            <td class="d-flex align-items-center">
-                <div class="mt-4 d-flex align-items-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="{{this._id}}" name="courseIds[]" id="">
-
-                    </div>
-                </div>
-                {{this.indexPlusOne}}
-
-            </td>
+            <td>{{this.indexPlusOne}}</td>
             <td>{{this.name}}</td>
             <td>{{this.level}}</td>
             <td>{{this.createdAt}}</td>
             <td>
-                <a href="/courses/{{this._id}}/edit" class="btn btn-success">Update</a>
+                <a href="" class="btn btn-success btn-restore" data-id="{{this._id}}">Restore</a>
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                     data-bs-target="#delete-course-modal" data-id="{{this._id}}">
-                    Delete
+                    Delete forever
                 </button>
             </td>
         </tr>
 
         {{else}}
         <tr>
-            <td colspan="5" class="text-center">You haven't posted any courses yet
-                <a href="/courses/create">Create the course</a>
+            <td colspan="5" class="text-center">You haven't deleted any courses yet
             </td>
         </tr>
         {{/each}}
     </tbody>
 </table>
-</form>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="delete-course-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -86,6 +61,7 @@
 
 <!-- Form delete -->
 <form name="delete-course-form" method="POST"></form>
+<form name="restore-course-form" method="POST"></form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -94,11 +70,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         var courseId;
         var deleteForm = document.forms['delete-course-form'];
+        var restoreForm = document.forms['restore-course-form'];
         var btnDeleteCourse = document.getElementById('btn-delete-course');
-        var checkboxAll = $('#Checkbox-all')
-        var itemCheckbox = $('input[name="courseIds[]"]')
-        var checkAllSubmit = $('.btn-submit')
-        var containerForm = document.forms['container-form']
+        var btnRestore = $('.btn-restore')
+
         // Khi modal được hiển thị
         $('#delete-course-modal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget); // Nút đã nhấn để mở modal
@@ -107,53 +82,15 @@
 
         // Khi nhấn nút "Accept delete"
         btnDeleteCourse.onclick = function () {
-            deleteForm.action = '/courses/' + courseId + '?_method=DELETE';
+            deleteForm.action = '/courses/' + courseId + '/force?_method=DELETE';
             deleteForm.submit();
         };
-
-        // Khi click vào checkbox "Check All"
-        checkboxAll.change(function () {
-            var isChecked = $(this).prop('checked');
-            itemCheckbox.prop('checked', isChecked); // Chọn hoặc bỏ chọn tất cả các checkbox con
-            renderCheckAll()
-        });
-
-        // Khi thay đổi trạng thái của một checkbox con
-        itemCheckbox.change(function () {
-            // Kiểm tra số checkbox con đã chọn
-            var totalCheckboxes = $('input[name="courseIds[]"]').length;
-            var checkedCheckboxes = $('input[name="courseIds[]"]:checked').length;
-
-            // Nếu tất cả checkbox con đều được chọn, thì "Check All" cũng được chọn
-            // Nếu không, bỏ chọn "Check All"
-            if (checkedCheckboxes === totalCheckboxes) {
-                checkboxAll.prop('checked', true); // Chọn checkbox "Check All"
-            } else {
-                checkboxAll.prop('checked', false); // Bỏ chọn checkbox "Check All"
-            }
-            renderCheckAll()
-        });
-
-        checkAllSubmit.click(function(e){
-            e.preventDefault()
-            var isSubmit = !$(this).hasClass('disabled')
-            if(isSubmit){
-                containerForm.submit();
-
-            }
+        btnRestore.click(function (e) {
+            e.preventDefault();
+            var courseId = $(this).data('id')
+            restoreForm.action = '/courses/' + courseId + '/restore?_method=PATCH';
+            restoreForm.submit();
         })
-
-        function renderCheckAll() {
-            var checkCount = $('input[name="courseIds[]"]:checked').length;
-            if (checkCount > 0) {
-                checkAllSubmit.removeClass('disabled'); // Xóa lớp 'disabled' nếu có checkbox được chọn
-                checkAllSubmit.prop('disabled', false); // Đảm bảo nút không bị disable
-            } else {
-                checkAllSubmit.addClass('disabled'); // Thêm lại lớp 'disabled' nếu không có checkbox nào được chọn
-                checkAllSubmit.prop('disabled', true); // Disable nút
-            }
-        }
-
     });
 </script>
 
@@ -238,10 +175,5 @@
             text-transform: uppercase;
             color: #666;
         }
-    }
-
-    .all-option {
-        width: 150px;
-        margin: 0 16px;
     }
 </style>

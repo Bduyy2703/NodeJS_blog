@@ -10,6 +10,7 @@ class MeController {
     //     }
     // }
     storedCourses(req, res, next) {
+        
         Course.find({}).lean()
             .then(courses => {
                 courses = courses.map((course, index) => ({
@@ -20,7 +21,17 @@ class MeController {
             })
             .catch(next);
     }
-
+    trashCourses(req,res,next){
+        Course.findWithDeleted({deleted: true}).lean()
+        .then(courses => {
+            courses = courses.map((course, index) => ({
+                ...course,
+                indexPlusOne: index + 1 // Bắt đầu từ 1
+            }));
+            res.render('me/trash-Courses', { courses });
+        })
+        .catch(next);
+    }
 }
 
 module.exports = new MeController();
